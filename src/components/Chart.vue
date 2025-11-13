@@ -7,10 +7,6 @@ import Vue from "vue";
 import { Component, Prop } from "vue-property-decorator";
 import { EChartsOption } from "echarts";
 const eCharts = require("echarts");
-console.log("eCharts");
-
-console.log(eCharts);
-
 @Component
 export default class Chart extends Vue {
   @Prop() options?: EChartsOption;

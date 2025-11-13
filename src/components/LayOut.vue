@@ -1,30 +1,43 @@
 <template>
-  <div class="wrapper" :class="contentPrefix && `${contentPrefix}-wrapper`">
-    <div class="content" :class="contentPrefix && `${contentPrefix}-content`">
-      <slot></slot>
-    </div>
-    <Nav />
+  <div class="wrapper">
+    <TopNav>
+      <span slot="title">{{name}}</span>
+    </TopNav>
+    <section class="main">
+      <slot />
+    </section>
+    <Nav/>
   </div>
 </template>
+
 <script lang="ts">
-export default {
-  name: "LayOut",
-  props: ["contentPrefix"],
-  data() {
-    return {};
-  },
-};
+  import Nav from '@/components/Nav.vue';
+  import TopNav from '@/components/TopNav.vue';
+
+  export default {
+    name: 'Layout',
+    components: {TopNav, Nav},
+    props: {
+      name: String,
+    }
+  };
 </script>
 
-<style scoped lang="scss">
-.wrapper {
-  background: #f0f0f0;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
-.content {
-  overflow: auto;
-  flex-grow: 1;
-}
+<style lang="scss" scoped>
+  .wrapper {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+
+    .main {
+     
+     
+      flex: 1;
+      overflow-y: auto;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+  }
 </style>

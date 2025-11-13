@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import VueRouter, { RouteConfig } from 'vue-router'
+import Home from '@/views/Home.vue'
 import Money from '@/views/Money.vue'
 import Labels from '@/views/Labels.vue'
 import EditLabel from '@/views/EditLabel.vue'
@@ -11,10 +12,14 @@ Vue.use(VueRouter)
 const routes: Array<RouteConfig> = [
   {
     path: '/',
-    redirect: '/money'
+    redirect: '/home'
   },
   {
-    path: '/money',
+    path: '/home',
+    component: Home
+  },
+  {
+    path: '/home/money',
     component: Money
   },
   {

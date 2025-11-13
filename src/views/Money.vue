@@ -1,87 +1,93 @@
 <template>
-  <div>
-    <lay-out content-prefix="layout">
-      <number-pad :value.sync="record.amount" @submit="saveRecord" />
-      <tabs
-        class-prefix="types"
-        :data-source="recordTypeList"
-        :value.sync="record.type"
+  <div class="money-wrapper">
+    <TopNav name="left">
+      <Tabs slot="title"
+            class-prefix="types"
+            :data-source="recordTypeList"
+            :value.sync="selected.type"
       />
-      <div class="notes">
-        <FromItem
-          type="date"
-          field-name="日期"
-          :value.sync="record.createAt"
-          placeholder="在这里输入日期"
-        />
-        <FromItem
-          field-name="备注"
-          :value.sync="record.notes"
-          placeholder="在这里输入备注"
-        />
-      </div>
-      <tags @update:value="record.tags = $event" />
-    </lay-out>
+    </TopNav>
+    <section class="main">
+      <Tags @update:value="selected.tags = $event" />
+    </section>
+    <KeyboardSection :amount.sync="selected.amount"
+                     :notes.sync="selected.notes"
+                     :createdAt.sync="selected.createdAt"
+                     @onSubmit="saveRecord"/>
   </div>
 </template>
 
-<script  lang="ts">
-import Vue from "vue";
-import { Component } from "vue-property-decorator";
-import Tags from "@/components/money/Tags.vue";
-import Tabs from "@/components/Tabs.vue";
-import NumberPad from "@/components/money/NumberPad.vue";
-import FromItem from "@/components/money/FromItem.vue";
-import recordTypeList from "@/constants/recordTypeList";
+<script lang="ts">
+  import TopNav from '@/components/TopNav.vue';
+  import CategorySection from "@/components/money/CategorySection.vue"
+  import KeyboardSection from "@/components/money/KeyboardSection.vue"
+  import Tags from "@/components/money/Tags.vue";
+  import Tabs from "@/components/Tabs.vue";
+  
+  import Vue from 'vue';
+  import {Component} from 'vue-property-decorator';
+  import recordTypeList from "@/constants/recordTypeList";
 
-localStorage.setItem("version", "0.0.1");
-
-@Component({
-  components: { Tags, NumberPad, Tabs, FromItem },
-  computed: {
-    recordList() {
-      return this.$store.state.recordList;
+  @Component({
+    components: {TopNav,CategorySection,KeyboardSection,Tags,Tabs},
+    computed: {
+      recordList() {
+        return this.$store.state.recordList;
+      },
     },
-  },
-})
-export default class Money extends Vue {
-  recordTypeList = recordTypeList;
-  record: RecordItem = {
-    tags: [],
-    notes: "",
-    type: "-",
-    amount: 0,
-    createAt: new Date().toISOString(),
-  };
-  created() {
-    this.$store.commit("fetchRecords");
-  }
-  onUpdateNotes(notes: string) {
-    this.record.notes = notes;
-  }
-  saveRecord() {
-    if (!this.record.tags || this.record.tags.length === 0) {
-      return window.alert("请至少选择一个标签");
+
+  })
+  export default class Money extends Vue {
+    recordTypeList = recordTypeList;
+    // 初始值
+    selected: RecordItem = {
+      tags: [],
+      notes: "",
+      type: "-",
+      amount: 0,
+      createAt: new Date().toISOString(),
+    };
+    created() {
+      console.log("0-------");
+      
+      console.log(recordTypeList);
+      
+      this.$store.commit('fetchRecords');
+      this.$store.commit('fetchTags');
     }
-    if (this.record.amount === 0) {
-      return;
-    }
-    this.$store.commit("createRecord", this.record);
-    if (this.$store.state.createRecordError === null) {
-      window.alert("已保存");
-      this.record.notes = "";
+    saveRecord() {
+      console.log(this.selected);
+      
+      this.$store.commit('createRecord', this.selected);
     }
   }
-}
 </script>
-<style lang="scss">
-.layout-content {
-  display: flex;
-  flex-direction: column-reverse;
-}
-</style>
-<style scoped lang="scss">
-.notes {
-  padding: 12px 0;
-}
+
+<style lang="scss" scoped>
+  .money-wrapper {
+    max-width: 520px;
+    margin: 0 auto;
+    background-color: #fff;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+
+    .main {
+      background-color: #fafbf6;
+      flex: 1;
+      overflow: auto;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+  }
 </style>
